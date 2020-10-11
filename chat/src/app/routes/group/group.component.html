@@ -1,0 +1,30 @@
+<nz-card nzTitle="Group Management" [nzExtra]="extraTemplate">
+  <ng-template #extraTemplate>
+    <button nz-button nzType="primary" (click)="addGroup()">Add</button>
+  </ng-template>
+
+  <div *ngFor="let item of groupList; let i = index" style="display: inline-block">
+    <nz-card
+      nzHoverable
+      [nzActions]="[actionSetting, actionEdit]"
+      style="width: 240px; text-align: center; margin-right: 24px"
+      [nzCover]="coverTemplate"
+      *ngIf="user.role == 'role_01' || user.role == 'role_02' || getShow(item.adminUser)"
+    >
+      <ng-template #coverTemplate>
+        <img alt="example" [src]="item.cover" (click)="routerChannel(item.uid)" style="width: 150px; margin: 24px auto 0px" />
+      </ng-template>
+      <nz-card-meta [nzTitle]="item.name"></nz-card-meta>
+      <ng-template #actionSetting>
+        <i nz-icon nzType="edit" (click)="editItem(item)"></i>
+      </ng-template>
+      <ng-template #actionEdit>
+        <i nz-icon nzType="delete" (click)="deleteItem(item)"></i>
+      </ng-template>
+    </nz-card>
+  </div>
+</nz-card>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzFooter]="null">
+  <sf [schema]="schema" [formData]="formData" (formSubmit)="submit($event)"></sf>
+</nz-modal>

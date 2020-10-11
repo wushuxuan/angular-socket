@@ -1,0 +1,10 @@
+<nz-card nzTitle="User Management" [nzExtra]="extraTemplate">
+  <ng-template #extraTemplate>
+    <button nz-button nzType="primary" (click)="addUser()">Add</button>
+  </ng-template>
+  <st #st [data]="url" [req]="{ params: params }" [columns]="columns"></st>
+</nz-card>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzFooter]="null">
+  <sf [schema]="schema" [formData]="formData" (formSubmit)="submit($event)"></sf>
+</nz-modal>

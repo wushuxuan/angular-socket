@@ -1,0 +1,72 @@
+<nz-card [nzExtra]="extraTemplate" class="channelGroup">
+  <ng-template #extraTemplate>
+    <button *ngIf="user.role != 'role_04'" nz-button nzType="primary" (click)="addGroup()">Add</button>
+    <button *ngIf="user.role != 'role_04'" [routerLink]="['/groupmanager']" nz-button>Back</button>
+  </ng-template>
+</nz-card>
+
+<div style="display: flex; flex-flow: row; margin-left: 24px">
+  <div style="width: 20%">
+    <page-header [title]="groupDetail?.name" [logo]="logo" [tab]="tab">
+      <ng-template #logo><img *ngIf="groupDetail" [src]="'http://localhost:3300/img/user/' + groupDetail?.cover" /> </ng-template>
+      <ng-template #tab>
+        <div>
+          <nz-tabset [nzSize]="'default'">
+            <nz-tab nzTitle="Channel List"> </nz-tab>
+          </nz-tabset>
+          <div *ngFor="let item of channelList" style="border-bottom: 1px solid #eee; padding: 24px 0px; cursor: pointer">
+            <span (click)="clickItem(item)"> {{ item.name }} </span>
+          </div>
+        </div>
+      </ng-template>
+    </page-header>
+  </div>
+  <div style="flex: 1; margin-left: 50px">
+    <nz-card [nzTitle]="channelTitle" [nzExtra]="more" *ngIf="currentroom">
+      <nz-alert *ngIf="roomnotice" nzType="info" [nzMessage]="roomnotice" style="margin-bottom: 12px"></nz-alert>
+      <div *ngIf="messages && messages.length" style="min-height: 200px">
+        <div *ngFor="let item of messages">
+          <div
+            style="background-color: #fff; /* border: 1px solid #b7eb8f; */ margin-bottom: 12px; display: block"
+            [ngStyle]="{ 'text-align': item.userId == user.uid ? 'right' : 'left' }"
+          >
+            <div
+              style="display: inline-block; padding: 10px; border-radius: 15px; font-size: 18px"
+              [ngStyle]="{ 'background-color': item.userId == user.uid ? '#f6ffed' : '#eee' }"
+            >
+              <span *ngIf="item.type == 'text'"> {{ item.msg }}</span>
+              <span *ngIf="item.type == 'img'">
+                <img [src]="'http://localhost:3300/img/user/' + item.msg" alt="" style="width: 200px"
+              /></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!messages || !messages.length" style="color: #eee; text-align: center; padding: 200px">No chat content for now</div>
+      <div style="display: flex; flex-flow: row">
+        <nz-upload nzAction="api/group/upload" (nzChange)="handleChange($event)" style="margin-right: 12px" [nzShowUploadList]="false">
+          <button nz-button><i nz-icon nzType="upload"></i>Select</button>
+        </nz-upload>
+        <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton" style="width: 100%">
+          <input type="text" nz-input placeholder="input content" [(ngModel)]="msg" />
+        </nz-input-group>
+        <ng-template #suffixButton>
+          <button nz-button nzType="primary" nzSize="large" (click)="send()" [disabled]="!msg" nzSearch>Send</button>
+        </ng-template>
+      </div>
+    </nz-card>
+    <ng-template #channelTitle>
+      {{ channelDetail?.name }} <a>({{ numusers }} Active Users)</a>
+    </ng-template>
+
+    <ng-template #more>
+      <a *ngIf="user.role != 'role_04'" nz-button nzType="link" (click)="editChannel(channelDetail)">Edit</a>
+      <a *ngIf="user.role != 'role_04'" nz-button nzType="link" (click)="deleteChannel(channelDetail)" nzDanger>Delete</a>
+      <a nz-button nzType="link" (click)="leaveChannel(channelDetail)" nzDanger>Leave</a>
+    </ng-template>
+  </div>
+</div>
+
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzFooter]="null">
+  <sf [schema]="schema" [formData]="formData" (formSubmit)="submit($event)"></sf>
+</nz-modal>
